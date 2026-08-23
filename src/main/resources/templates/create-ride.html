@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Create Ride</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+
+<body>
+
+<nav>
+    <a th:href="@{/}">GreenRide</a>
+
+    <div>
+        <a th:href="@{/rides}">Find Ride</a>
+        <a th:href="@{/my-rides}">My Rides</a>
+        <a th:href="@{/bookings}">My Bookings</a>
+    </div>
+</nav>
+
+<main>
+
+    <div class="card form-card">
+
+        <h1>Create Ride</h1>
+
+        <form
+                th:action="@{/rides/create}"
+                th:object="${rideRequest}"
+                method="post">
+
+            <div class="error"
+                 th:if="${#fields.hasGlobalErrors()}">
+
+                <p th:each="error : ${#fields.globalErrors()}"
+                   th:text="${error}">
+                </p>
+
+            </div>
+
+            <label>Origin</label>
+
+            <input
+                    type="text"
+                    th:field="*{origin}"
+                    placeholder="Athens">
+
+            <p class="field-error"
+               th:errors="*{origin}">
+            </p>
+
+            <label>Destination</label>
+
+            <input
+                    type="text"
+                    th:field="*{destination}"
+                    placeholder="Piraeus">
+
+            <p class="field-error"
+               th:errors="*{destination}">
+            </p>
+
+            <label>Departure time</label>
+
+            <input
+                    type="datetime-local"
+                    th:field="*{departureTime}">
+
+            <p class="field-error"
+               th:errors="*{departureTime}">
+            </p>
+
+            <label>Available seats</label>
+
+            <input
+                    type="number"
+                    min="1"
+                    th:field="*{availableSeats}">
+
+            <p class="field-error"
+               th:errors="*{availableSeats}">
+            </p>
+
+            <button type="submit">
+                Create Ride
+            </button>
+
+        </form>
+
+    </div>
+
+</main>
+
+</body>
+</html>

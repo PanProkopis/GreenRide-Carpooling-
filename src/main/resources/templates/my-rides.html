@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <title>
+        GreenRide - My Rides
+    </title>
+
+    <link rel="stylesheet"
+          th:href="@{/css/style.css}">
+
+</head>
+
+<body>
+
+<nav>
+
+    <a th:href="@{/}">
+        GreenRide
+    </a>
+
+    <div>
+
+        <a th:href="@{/rides}">
+            Find Ride
+        </a>
+
+        <a th:href="@{/rides/create}">
+            Create Ride
+        </a>
+
+        <a th:href="@{/bookings}">
+            My Bookings
+        </a>
+
+        <a th:href="@{/ratings}">
+            Ratings
+        </a>
+
+    </div>
+
+</nav>
+
+<main>
+
+    <h1>
+        My Rides
+    </h1>
+
+    <div
+            class="success"
+            th:if="${success}"
+            th:text="${success}">
+    </div>
+
+    <div
+            class="error"
+            th:if="${error}"
+            th:text="${error}">
+    </div>
+
+    <p th:if="${#lists.isEmpty(rides)}">
+        You have not created any rides yet.
+    </p>
+
+    <div class="ride-grid">
+
+        <div
+                class="card"
+                th:each="ride : ${rides}">
+
+            <h2>
+
+                <span th:text="${ride.origin}">
+                </span>
+
+                →
+
+                <span th:text="${ride.destination}">
+                </span>
+
+            </h2>
+
+            <p>
+
+                <strong>
+                    Departure:
+                </strong>
+
+                <span th:text="${ride.departureTime}">
+                </span>
+
+            </p>
+
+            <p>
+
+                <strong>
+                    Available seats:
+                </strong>
+
+                <span th:text="${ride.availableSeats}">
+                </span>
+
+            </p>
+
+            <a
+                    class="button secondary"
+                    th:href="@{/rides/{id}/route-info(id=${ride.id})}">
+
+                Route Info
+
+            </a>
+
+        </div>
+
+    </div>
+
+</main>
+
+</body>
+</html>

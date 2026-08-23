@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+</body>
+</html><!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>GreenRide - Login</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+
+<body>
+
+<div class="auth-container">
+
+    <div class="card auth-card">
+
+        <h1>GreenRide</h1>
+        <p class="subtitle">Share the ride. Reduce the footprint.</p>
+
+        <div class="success"
+             th:if="${success}"
+             th:text="${success}">
+        </div>
+
+        <div class="error"
+             th:if="${param.error}">
+            Invalid email or password.
+        </div>
+
+        <div class="success"
+             th:if="${param.logout}">
+            You have logged out successfully.
+        </div>
+
+        <form th:action="@{/login}" method="post">
+
+            <label>Email</label>
+
+            <input
+                    type="email"
+                    name="username"
+                    required>
+
+            <label>Password</label>
+
+            <input
+                    type="password"
+                    name="password"
+                    required>
+
+            <button type="submit">
+                Login
+            </button>
+
+        </form>
+
+        <p>
+            Don't have an account?
+            <a th:href="@{/register}">
+                Register
+            </a>
+        </p>
+
+    </div>
+
+</div>
+
+</body>
+</html>

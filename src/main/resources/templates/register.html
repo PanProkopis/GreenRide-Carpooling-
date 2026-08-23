@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>GreenRide - Register</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+
+<body>
+
+<div class="auth-container">
+
+    <div class="card auth-card">
+
+        <h1>Create Account</h1>
+
+        <form
+                th:action="@{/register}"
+                th:object="${registerRequest}"
+                method="post">
+
+            <div class="error"
+                 th:if="${#fields.hasGlobalErrors()}">
+
+                <p th:each="error : ${#fields.globalErrors()}"
+                   th:text="${error}">
+                </p>
+
+            </div>
+
+            <label>Name</label>
+
+            <input
+                    type="text"
+                    th:field="*{name}">
+
+            <p class="field-error"
+               th:errors="*{name}">
+            </p>
+
+            <label>Email</label>
+
+            <input
+                    type="email"
+                    th:field="*{email}">
+
+            <p class="field-error"
+               th:errors="*{email}">
+            </p>
+
+            <label>Password</label>
+
+            <input
+                    type="password"
+                    th:field="*{password}">
+
+            <p class="field-error"
+               th:errors="*{password}">
+            </p>
+
+            <button type="submit">
+                Register
+            </button>
+
+        </form>
+
+        <p>
+            Already have an account?
+            <a th:href="@{/login}">
+                Login
+            </a>
+        </p>
+
+    </div>
+
+</div>
+
+</body>
+</html>

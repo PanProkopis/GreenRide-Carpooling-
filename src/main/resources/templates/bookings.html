@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>My Bookings</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+
+<body>
+
+<nav>
+    <a th:href="@{/}">GreenRide</a>
+
+    <div>
+        <a th:href="@{/rides}">Find Ride</a>
+        <a th:href="@{/rides/create}">Create Ride</a>
+        <a th:href="@{/my-rides}">My Rides</a>
+    </div>
+</nav>
+
+<main>
+
+    <h1>My Bookings</h1>
+
+    <div class="success"
+         th:if="${success}"
+         th:text="${success}">
+    </div>
+
+    <div class="error"
+         th:if="${error}"
+         th:text="${error}">
+    </div>
+
+    <p th:if="${#lists.isEmpty(bookings)}">
+        You have no bookings.
+    </p>
+
+    <div class="ride-grid">
+
+        <div class="card"
+             th:each="booking : ${bookings}">
+
+            <h2>
+                <span th:text="${booking.ride.origin}"></span>
+                →
+                <span th:text="${booking.ride.destination}"></span>
+            </h2>
+
+            <p>
+                <strong>Driver:</strong>
+                <span th:text="${booking.ride.driver.name}"></span>
+            </p>
+
+            <p>
+                <strong>Departure:</strong>
+                <span th:text="${booking.ride.departureTime}"></span>
+            </p>
+
+            <p>
+                <strong>Booked at:</strong>
+                <span th:text="${booking.bookingTime}"></span>
+            </p>
+
+            <form
+                    th:action="@{/bookings/{id}/cancel(id=${booking.id})}"
+                    method="post">
+
+                <button type="submit"
+                        class="danger">
+                    Cancel Booking
+                </button>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</main>
+
+</body>
+</html>

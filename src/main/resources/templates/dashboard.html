@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <title>
+        GreenRide
+    </title>
+
+    <link rel="stylesheet"
+          th:href="@{/css/style.css}">
+
+</head>
+
+<body>
+
+<nav>
+
+    <a th:href="@{/}">
+        GreenRide
+    </a>
+
+    <div>
+
+        <a th:href="@{/rides}">
+            Find Ride
+        </a>
+
+        <a th:href="@{/rides/create}">
+            Create Ride
+        </a>
+
+        <a th:href="@{/my-rides}">
+            My Rides
+        </a>
+
+        <a th:href="@{/bookings}">
+            My Bookings
+        </a>
+
+        <a th:href="@{/ratings}">
+            Ratings
+        </a>
+
+        <form
+                th:action="@{/logout}"
+                method="post"
+                class="inline-form">
+
+            <button
+                    type="submit"
+                    class="logout-button">
+
+                Logout
+
+            </button>
+
+        </form>
+
+    </div>
+
+</nav>
+
+<main>
+
+    <div class="hero">
+
+        <h1>
+
+            Welcome,
+
+            <span th:text="${user.name}">
+                User
+            </span>
+
+        </h1>
+
+        <p>
+            Find a ride or share your journey with others.
+        </p>
+
+        <div class="hero-actions">
+
+            <a
+                    class="button"
+                    th:href="@{/rides}">
+
+                Find a Ride
+
+            </a>
+
+            <a
+                    class="button secondary"
+                    th:href="@{/rides/create}">
+
+                Create a Ride
+
+            </a>
+
+            <a
+                    class="button secondary"
+                    th:href="@{/ratings}">
+
+                Ratings
+
+            </a>
+
+            <a
+                    th:if="${user.role.name() == 'ADMIN'}"
+                    class="button"
+                    th:href="@{/admin}">
+
+                Admin Panel
+
+            </a>
+
+        </div>
+
+    </div>
+
+</main>
+
+</body>
+</html>

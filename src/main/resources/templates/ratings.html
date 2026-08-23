@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <title>
+        GreenRide - Ratings
+    </title>
+
+    <link rel="stylesheet"
+          th:href="@{/css/style.css}">
+
+</head>
+
+<body>
+
+<nav>
+
+    <a th:href="@{/}">
+        GreenRide
+    </a>
+
+    <div>
+
+        <a th:href="@{/rides}">
+            Find Ride
+        </a>
+
+        <a th:href="@{/rides/create}">
+            Create Ride
+        </a>
+
+        <a th:href="@{/my-rides}">
+            My Rides
+        </a>
+
+        <a th:href="@{/bookings}">
+            My Bookings
+        </a>
+
+        <a th:href="@{/ratings}">
+            Ratings
+        </a>
+
+    </div>
+
+</nav>
+
+<main>
+
+    <h1>
+        Ratings
+    </h1>
+
+    <div class="success"
+         th:if="${success}"
+         th:text="${success}">
+    </div>
+
+    <div class="error"
+         th:if="${error}"
+         th:text="${error}">
+    </div>
+
+
+    <!-- PASSENGER -> DRIVER -->
+
+    <h2>
+        Rate your Drivers
+    </h2>
+
+    <p th:if="${#lists.isEmpty(passengerBookings)}">
+        You have no completed passenger rides to rate.
+    </p>
+
+    <div class="ride-grid">
+
+        <div class="card"
+             th:each="booking : ${passengerBookings}">
+
+            <h3>
+
+                <span th:text="${booking.ride.origin}">
+                </span>
+
+                →
+
+                <span th:text="${booking.ride.destination}">
+                </span>
+
+            </h3>
+
+            <p>
+                Driver:
+
+                <strong th:text="${booking.ride.driver.name}">
+                </strong>
+            </p>
+
+            <form
+                    th:action="@{/ratings/create}"
+                    method="post">
+
+                <input
+                        type="hidden"
+                        name="toUserId"
+                        th:value="${booking.ride.driver.id}">
+
+                <input
+                        type="hidden"
+                        name="rideId"
+                        th:value="${booking.ride.id}">
+
+                <label>
+                    Score
+                </label>
+
+                <select
+                        name="score"
+                        required>
+
+                    <option value="5">
+                        5 - Excellent
+                    </option>
+
+                    <option value="4">
+                        4 - Very Good
+                    </option>
+
+                    <option value="3">
+                        3 - Good
+                    </option>
+
+                    <option value="2">
+                        2 - Fair
+                    </option>
+
+                    <option value="1">
+                        1 - Poor
+                    </option>
+
+                </select>
+
+                <label>
+                    Comment
+                </label>
+
+                <textarea
+                        name="comment"
+                        placeholder="Optional comment"></textarea>
+
+                <button type="submit">
+                    Submit Rating
+                </button>
+
+            </form>
+
+        </div>
+
+    </div>
+
+
+    <!-- DRIVER -> PASSENGERS -->
+
+    <h2>
+        Rate your Passengers
+    </h2>
+
+    <p th:if="${#lists.isEmpty(driverRides)}">
+        You have no completed rides as driver.
+    </p>
+
+    <div th:each="ride : ${driverRides}">
+
+        <h3>
+
+            <span th:text="${ride.origin}">
+            </span>
+
+            →
+
+            <span th:text="${ride.destination}">
+            </span>
+
+        </h3>
+
+        <p th:if="${#lists.isEmpty(passengersByRide[ride.id])}">
+            No passengers for this ride.
+        </p>
+
+        <div class="ride-grid">
+
+            <div class="card"
+                 th:each="booking : ${passengersByRide[ride.id]}">
+
+                <p>
+
+                    Passenger:
+
+                    <strong th:text="${booking.passenger.name}">
+                    </strong>
+
+                </p>
+
+                <form
+                        th:action="@{/ratings/create}"
+                        method="post">
+
+                    <input
+                            type="hidden"
+                            name="toUserId"
+                            th:value="${booking.passenger.id}">
+
+                    <input
+                            type="hidden"
+                            name="rideId"
+                            th:value="${ride.id}">
+
+                    <label>
+                        Score
+                    </label>
+
+                    <select
+                            name="score"
+                            required>
+
+                        <option value="5">
+                            5 - Excellent
+                        </option>
+
+                        <option value="4">
+                            4 - Very Good
+                        </option>
+
+                        <option value="3">
+                            3 - Good
+                        </option>
+
+                        <option value="2">
+                            2 - Fair
+                        </option>
+
+                        <option value="1">
+                            1 - Poor
+                        </option>
+
+                    </select>
+
+                    <label>
+                        Comment
+                    </label>
+
+                    <textarea
+                            name="comment"
+                            placeholder="Optional comment"></textarea>
+
+                    <button type="submit">
+                        Submit Rating
+                    </button>
+
+                </form>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</main>
+
+</body>
+</html>

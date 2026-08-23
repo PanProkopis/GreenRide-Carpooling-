@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org">
+
+<head>
+  <meta charset="UTF-8">
+
+  <title>
+    GreenRide - Route Information
+  </title>
+
+  <link rel="stylesheet"
+        th:href="@{/css/style.css}">
+</head>
+
+<body>
+
+<nav>
+
+  <a th:href="@{/}">
+    GreenRide
+  </a>
+
+  <div>
+    <a th:href="@{/rides}">
+      Find Ride
+    </a>
+
+    <a th:href="@{/rides/create}">
+      Create Ride
+    </a>
+
+    <a th:href="@{/my-rides}">
+      My Rides
+    </a>
+
+    <a th:href="@{/bookings}">
+      My Bookings
+    </a>
+
+    <a th:href="@{/ratings}">
+      Ratings
+    </a>
+  </div>
+
+</nav>
+
+<main>
+
+  <div class="card form-card">
+
+    <h1>
+      Route Information
+    </h1>
+
+    <h2>
+
+            <span th:text="${routeInfo.origin}">
+                Origin
+            </span>
+
+      →
+
+      <span th:text="${routeInfo.destination}">
+                Destination
+            </span>
+
+    </h2>
+
+    <p>
+      <strong>
+        Origin coordinates:
+      </strong>
+
+      <span th:text="${routeInfo.originLatitude}">
+            </span>,
+
+      <span th:text="${routeInfo.originLongitude}">
+            </span>
+    </p>
+
+    <p>
+      <strong>
+        Destination coordinates:
+      </strong>
+
+      <span th:text="${routeInfo.destinationLatitude}">
+            </span>,
+
+      <span th:text="${routeInfo.destinationLongitude}">
+            </span>
+    </p>
+
+    <p>
+      <strong>
+        Straight-line distance:
+      </strong>
+
+      <span th:text="${routeInfo.straightLineDistanceKm}">
+            </span>
+
+      km
+    </p>
+
+    <p>
+      Distance is calculated geographically
+      and does not represent driving distance.
+    </p>
+
+    <a class="button"
+       th:href="@{/rides}">
+
+      Back to Rides
+
+    </a>
+
+  </div>
+
+</main>
+
+</body>
+</html>

@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <title>
+        GreenRide Admin
+    </title>
+
+    <link rel="stylesheet"
+          th:href="@{/css/style.css}">
+
+</head>
+
+<body>
+
+<nav>
+
+    <a th:href="@{/}">
+        GreenRide Admin
+    </a>
+
+    <div>
+
+        <a th:href="@{/}">
+            Home
+        </a>
+
+        <a th:href="@{/admin}">
+            Admin
+        </a>
+
+        <form th:action="@{/logout}"
+              method="post"
+              class="inline-form">
+
+            <button
+                    type="submit"
+                    class="logout-button">
+
+                Logout
+
+            </button>
+
+        </form>
+
+    </div>
+
+</nav>
+
+<main>
+
+    <h1>
+        Administration
+    </h1>
+
+    <div class="success"
+         th:if="${success}"
+         th:text="${success}">
+    </div>
+
+    <div class="error"
+         th:if="${error}"
+         th:text="${error}">
+    </div>
+
+
+    <h2>
+        Statistics
+    </h2>
+
+    <div class="ride-grid">
+
+        <div class="card">
+
+            <h3>
+                Total Users
+            </h3>
+
+            <p th:text="${stats.totalUsers}">
+            </p>
+
+        </div>
+
+        <div class="card">
+
+            <h3>
+                Total Rides
+            </h3>
+
+            <p th:text="${stats.totalRides}">
+            </p>
+
+        </div>
+
+        <div class="card">
+
+            <h3>
+                Total Bookings
+            </h3>
+
+            <p th:text="${stats.totalBookings}">
+            </p>
+
+        </div>
+
+        <div class="card">
+
+            <h3>
+                Average Occupancy
+            </h3>
+
+            <p>
+
+                <span th:text="${stats.averageOccupancyPercentage}">
+                </span>
+
+                %
+
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <h2>
+        Users
+    </h2>
+
+    <div class="ride-grid">
+
+        <div class="card"
+             th:each="user : ${users}">
+
+            <h3 th:text="${user.name}">
+                User
+            </h3>
+
+            <p th:text="${user.email}">
+            </p>
+
+            <p>
+
+                Role:
+
+                <strong th:text="${user.role}">
+                </strong>
+
+            </p>
+
+            <p>
+
+                Blocked:
+
+                <strong th:text="${user.blocked}">
+                </strong>
+
+            </p>
+
+            <form
+                    th:if="${user.role.name() != 'ADMIN' and !user.blocked}"
+                    th:action="@{/admin/users/{id}/block(id=${user.id})}"
+                    method="post">
+
+                <button
+                        class="danger"
+                        type="submit">
+
+                    Block User
+
+                </button>
+
+            </form>
+
+            <form
+                    th:if="${user.role.name() != 'ADMIN' and user.blocked}"
+                    th:action="@{/admin/users/{id}/unblock(id=${user.id})}"
+                    method="post">
+
+                <button type="submit">
+                    Unblock User
+                </button>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</main>
+
+</body>
+</html>

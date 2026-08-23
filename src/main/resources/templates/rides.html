@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <title>
+        GreenRide - Find a Ride
+    </title>
+
+    <link rel="stylesheet"
+          th:href="@{/css/style.css}">
+
+</head>
+
+<body>
+
+<nav>
+
+    <a th:href="@{/}">
+        GreenRide
+    </a>
+
+    <div>
+
+        <a th:href="@{/rides}">
+            Find Ride
+        </a>
+
+        <a th:href="@{/rides/create}">
+            Create Ride
+        </a>
+
+        <a th:href="@{/my-rides}">
+            My Rides
+        </a>
+
+        <a th:href="@{/bookings}">
+            My Bookings
+        </a>
+
+        <a th:href="@{/ratings}">
+            Ratings
+        </a>
+
+        <form
+                th:action="@{/logout}"
+                method="post"
+                class="inline-form">
+
+            <button
+                    type="submit"
+                    class="logout-button">
+
+                Logout
+
+            </button>
+
+        </form>
+
+    </div>
+
+</nav>
+
+<main>
+
+    <h1>
+        Find a Ride
+    </h1>
+
+    <!-- SEARCH -->
+
+    <div class="card search-card">
+
+        <h2>
+            Search available rides
+        </h2>
+
+        <form
+                th:action="@{/rides}"
+                method="get"
+                class="search-form">
+
+            <div>
+
+                <label>
+                    Origin
+                </label>
+
+                <input
+                        type="text"
+                        name="origin"
+                        th:value="${origin}"
+                        placeholder="e.g. Athens">
+
+            </div>
+
+            <div>
+
+                <label>
+                    Destination
+                </label>
+
+                <input
+                        type="text"
+                        name="destination"
+                        th:value="${destination}"
+                        placeholder="e.g. Piraeus">
+
+            </div>
+
+            <div class="search-actions">
+
+                <button type="submit">
+                    Search
+                </button>
+
+                <a
+                        class="button secondary"
+                        th:href="@{/rides}">
+
+                    Clear
+
+                </a>
+
+            </div>
+
+        </form>
+
+    </div>
+
+
+    <!-- MESSAGES -->
+
+    <div
+            class="success"
+            th:if="${success}"
+            th:text="${success}">
+    </div>
+
+    <div
+            class="error"
+            th:if="${error}"
+            th:text="${error}">
+    </div>
+
+
+    <!-- SEARCH INFORMATION -->
+
+    <div
+            class="search-summary"
+            th:if="${searching}">
+
+        <p>
+
+            Search results for:
+
+            <strong
+                    th:text="${origin.isBlank() ? 'Any origin' : origin}">
+            </strong>
+
+            →
+
+            <strong
+                    th:text="${destination.isBlank() ? 'Any destination' : destination}">
+            </strong>
+
+        </p>
+
+    </div>
+
+
+    <!-- NO RIDES -->
+
+    <p th:if="${#lists.isEmpty(rides)}">
+
+        No available rides found.
+
+    </p>
+
+
+    <!-- RIDES -->
+
+    <div class="ride-grid">
+
+        <div
+                class="card"
+                th:each="ride : ${rides}">
+
+            <h2>
+
+                <span th:text="${ride.origin}">
+                </span>
+
+                →
+
+                <span th:text="${ride.destination}">
+                </span>
+
+            </h2>
+
+            <p>
+
+                <strong>
+                    Driver:
+                </strong>
+
+                <span th:text="${ride.driver.name}">
+                </span>
+
+            </p>
+
+            <p>
+
+                <strong>
+                    Departure:
+                </strong>
+
+                <span th:text="${ride.departureTime}">
+                </span>
+
+            </p>
+
+            <p>
+
+                <strong>
+                    Available seats:
+                </strong>
+
+                <span th:text="${ride.availableSeats}">
+                </span>
+
+            </p>
+
+
+            <div class="card-actions">
+
+                <form
+                        th:action="@{/rides/{id}/book(id=${ride.id})}"
+                        method="post">
+
+                    <button type="submit">
+                        Book Seat
+                    </button>
+
+                </form>
+
+                <a
+                        class="button secondary"
+                        th:href="@{/rides/{id}/route-info(id=${ride.id})}">
+
+                    Route Info
+
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</main>
+
+</body>
+</html>
