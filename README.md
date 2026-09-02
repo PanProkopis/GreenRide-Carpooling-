@@ -1,410 +1,145 @@
 # GreenRide
 
-GreenRide is a Spring Boot carpooling application developed for the
-Distributed Systems course.
+GreenRide is a Spring Boot carpooling application developed for a Distributed
+Systems course. Users can offer and search for rides, book and cancel seats,
+view route information, and rate participants after completed rides.
 
-The application allows users to act both as drivers and passengers,
-create and search rides, book available seats, cancel bookings and
-rate other participants after a completed ride.
-
-Administrators can view system statistics and manage malicious users.
-
----
-
-## Technologies
+## Requirements
 
 - Java 21
-- Spring Boot 4
-- Spring MVC
-- Spring Data JPA
-- Spring Security
-- JWT Authentication
-- Thymeleaf
-- H2 Database
-- Hibernate
-- Bean Validation
-- OpenAPI / Swagger UI
-- Open-Meteo Geocoding REST API
-- Maven
-- JUnit 5
-- Mockito
+- No separate Maven installation is required; the Maven Wrapper is included.
 
----
+## Run and Test
 
-## Architecture
+On Windows PowerShell:
 
-The project follows a layered architecture:
-
-```text
-Controller
-    |
-    v
-Service
-    |
-    v
-Repository
-    |
-    v
-Database
+```powershell
+.\mvnw.cmd clean test
+.\mvnw.cmd spring-boot:run
 ```
 
-For the external geocoding service a Port / Adapter approach is used:
-
-```text
-RouteInfoService
-       |
-       v
-GeocodingPort
-       |
-       v
-OpenMeteoGeocodingAdapter
-       |
-       v
-Open-Meteo REST API
-```
-
-This keeps the core application independent from the external
-provider.
-
----
-
-## User Roles
-
-### USER
-
-A normal user can act as both driver and passenger.
-
-Available functionality:
-
-- Register
-- Login / logout
-- Create rides
-- Search available rides
-- View available rides
-- Book a seat
-- Cancel a booking
-- View created rides
-- View personal bookings
-- View ride route information
-- Rate drivers
-- Rate passengers
-
-### ADMIN
-
-An administrator can additionally:
-
-- View all users
-- Block users
-- Unblock users
-- View total number of users
-- View total number of rides
-- View total number of bookings
-- View average ride occupancy
-
----
-
-## Business Rules
-
-GreenRide implements the following rules:
-
-- A ride must have a future departure time.
-- A ride must have at least one available seat.
-- A ride may contain at most 8 passenger seats.
-- A driver may have at most 3 active future rides.
-- A driver cannot book their own ride.
-- A passenger cannot book the same ride twice.
-- A ride cannot be booked after departure.
-- A booking cannot exceed the available ride capacity.
-- Booking creation uses database locking to reduce the risk of
-  concurrent overbooking.
-- A passenger may cancel only their own booking.
-- Cancellation is not allowed 10 minutes or less before departure.
-- Ratings are allowed only after a ride has taken place.
-- A user cannot rate themselves.
-- Ratings are allowed only between the driver and passengers who
-  participated in the same ride.
-- Duplicate ratings for the same ride and user pair are rejected.
-
----
-
-## Authentication and Security
-
-GreenRide uses two authentication mechanisms.
-
-### Web UI
-
-The Thymeleaf Web UI uses stateful Spring Security authentication.
-
-Authentication state is stored using an HTTP session and cookie.
-
-### REST API
-
-The REST API uses stateless JWT authentication.
-
-After login:
-
-```text
-POST /api/auth/login
-```
-
-the server returns a JWT.
-
-Protected API requests use:
-
-```text
-Authorization: Bearer <JWT>
-```
-
-The JWT contains the authenticated user's email and role.
-
-Administrative API endpoints require the `ADMIN` role.
-
----
-
-## Database
-
-The project currently uses an in-memory H2 database.
-
-Configuration:
-
-```properties
-spring.datasource.url=jdbc:h2:mem:greenride
-spring.datasource.username=sa
-spring.datasource.password=
-```
-
-H2 Console:
-
-```text
-http://localhost:8080/h2-console
-```
-
-Because the database is in-memory, its data is reset whenever the
-application restarts.
-
----
-
-## Running the Application
-
-Requirements:
-
-- Java 21
-- Maven
-
-Run using Maven:
+On Linux or macOS:
 
 ```bash
+./mvnw clean test
 ./mvnw spring-boot:run
 ```
 
-or run:
-
-```text
-GreenrideApplication
-```
-
-directly from IntelliJ IDEA.
-
-The application starts at:
-
-```text
-http://localhost:8080
-```
-
----
+The application starts at `http://localhost:8080`. Stop it from the terminal
+with `Ctrl+C`.
 
 ## Web UI
 
 Main pages:
 
-```text
-/register
-/login
-/
-/rides
-/rides/create
-/my-rides
-/bookings
-/ratings
-/admin
+- Registration: `http://localhost:8080/register`
+- Login: `http://localhost:8080/login`
+- Dashboard: `http://localhost:8080/`
+- Available rides: `http://localhost:8080/rides`
+- Create ride: `http://localhost:8080/rides/create`
+- My rides: `http://localhost:8080/my-rides`
+- My bookings: `http://localhost:8080/bookings`
+- Ratings: `http://localhost:8080/ratings`
+- Administration: `http://localhost:8080/admin`
+
+## Roles
+
+- `USER`: registers and signs in, acts as a driver or passenger, creates and
+  searches rides, books and cancels seats, views route information, and rates
+  eligible participants.
+- `ADMIN`: has the user capabilities and can also view system statistics and
+  users, and block or unblock non-administrator accounts.
+
+Public registration always creates a `USER` account.
+
+## Initial Administrator
+
+The initial administrator is created at startup only when an administrator
+email and password are provided and the normalized email does not already
+exist. The administrator password must contain between 8 and 72 characters.
+
+Example for Windows PowerShell:
+
+```powershell
+$env:ADMIN_NAME="Administrator"
+$env:ADMIN_EMAIL="admin@example.com"
+$env:ADMIN_PASSWORD="replace-with-a-strong-password"
+$env:JWT_SECRET="replace-with-a-long-random-secret"
+.\mvnw.cmd spring-boot:run
 ```
 
----
+These are example values. Use secure credentials and a long random JWT secret.
+Secrets and passwords must never be committed to the repository.
 
-## REST API
+## Authentication and Security
 
-Main API groups:
+The Web UI uses stateful Spring Security form login. Authentication is retained
+in an HTTP session and session cookie.
 
-```text
-/api/auth
-/api/rides
-/api/bookings
-/api/ratings
-/api/admin
-```
+Requests under `/api/**` use stateless JWT authentication. Passwords for both
+registered users and the initial administrator are hashed with BCrypt before
+storage. To call a protected REST endpoint:
 
-Examples:
-
-### Register
+1. Register with `POST /api/auth/register`, if needed.
+2. Sign in with `POST /api/auth/login` to receive a JWT.
+3. Send the token with protected requests:
 
 ```http
-POST /api/auth/register
+Authorization: Bearer <token>
 ```
 
-### Login
+Administrative REST endpoints under `/api/admin/**` require the `ADMIN` role.
 
-```http
-POST /api/auth/login
-```
+## REST API and Swagger
 
-### Available rides
-
-```http
-GET /api/rides/available
-```
-
-### Search rides
-
-```http
-GET /api/rides/search?origin=Athens&destination=Piraeus
-```
-
-### Create booking
-
-```http
-POST /api/bookings
-```
-
-### Route information
-
-```http
-GET /api/rides/{id}/route-info
-```
-
-### Admin statistics
-
-```http
-GET /api/admin/stats
-```
-
----
-
-## Swagger / OpenAPI
-
-Swagger UI:
+Swagger UI provides the available endpoints, request schemas, and an
+`Authorize` button:
 
 ```text
-http://localhost:8080/swagger-ui.html
+http://localhost:8080/swagger-ui/index.html
 ```
 
-OpenAPI JSON:
+OpenAPI JSON is available at:
 
 ```text
 http://localhost:8080/v3/api-docs
 ```
 
-Protected endpoints can be tested through Swagger using the
-`Authorize` button and a valid JWT.
+The main API groups are:
 
----
+- `/api/auth` for registration and login
+- `/api/rides` for rides, searches, and route information
+- `/api/bookings` for viewing, creating, and cancelling bookings
+- `/api/ratings` for ratings
+- `/api/admin` for administrator statistics and user management
 
-## External REST Service
+Use Swagger to submit request bodies and inspect responses. For protected
+operations, first call `/api/auth/login`, copy the returned token, select
+`Authorize`, and enter the token as a bearer credential.
 
-GreenRide consumes the Open-Meteo Geocoding API.
+## Database
 
-The external API converts location names such as:
-
-```text
-Athens
-Piraeus
-```
-
-into geographical coordinates.
-
-GreenRide then calculates the straight-line distance between origin
-and destination using their latitude and longitude.
-
-The displayed distance is geographical straight-line distance and
-must not be interpreted as actual driving distance.
-
-The external service is accessed through:
+GreenRide uses an in-memory H2 database. Open the H2 console at:
 
 ```text
-GeocodingPort
+http://localhost:8080/h2-console
 ```
 
-and:
+Use these connection details:
 
 ```text
-OpenMeteoGeocodingAdapter
+JDBC URL: jdbc:h2:mem:greenride
+Driver class: org.h2.Driver
+User name: sa
+Password: leave blank
 ```
 
-so that the external provider remains separated from the application's
-business logic.
+Because the database is in memory, all application data is reset when the
+application restarts.
 
----
+## External Geocoding
 
-## Tests
-
-The project contains automated unit tests for important business
-rules.
-
-Tests cover:
-
-- Valid ride creation
-- Maximum active rides
-- Past ride rejection
-- Booking creation
-- Seat reduction after booking
-- Booking past rides
-- Cancellation cutoff
-- Valid ratings
-- Invalid ratings from users who did not participate in a ride
-
-Run all tests with:
-
-```bash
-./mvnw test
-```
-
----
-
-## Main Project Structure
-
-```text
-src/main/java/gr/hua/dit/greenride
-|
-|-- config
-|-- controller
-|-- dto
-|-- entity
-|-- exception
-|-- external
-|-- repository
-|-- security
-|-- service
-|
-`-- GreenrideApplication.java
-```
-
-Web resources:
-
-```text
-src/main/resources
-|
-|-- templates
-|-- static/css
-`-- application.properties
-```
-
-Tests:
-
-```text
-src/test/java/gr/hua/dit/greenride
-```
-
----
-
-## GreenRide
-
-University project for the Distributed Systems course.
+GreenRide uses the Open-Meteo Geocoding API to resolve ride origin and
+destination names to coordinates. The application then calculates the
+straight-line geographical distance between them; this is not a driving-route
+distance.
