@@ -156,4 +156,82 @@ class RideServiceTest {
                 never()
         ).save(any());
     }
+
+    @Test
+    void createRideShouldRejectEqualOriginAndDestinationIgnoringCaseAndSpaces() {
+
+        Ride ride =
+                new Ride(
+                        " Athens ",
+                        " aTHENS ",
+                        LocalDateTime.now()
+                                .plusDays(1),
+                        3,
+                        driver
+                );
+
+        IllegalArgumentException exception =
+                assertThrows(
+                        IllegalArgumentException.class,
+                        () -> rideService.createRide(ride)
+                );
+
+        assertEquals(
+                "Origin and destination must be different",
+                exception.getMessage()
+        );
+
+        verify(rideRepository, never()).save(any());
+    }
+
+    @Test
+    void createRideShouldRejectMoreThanEightAvailableSeats() {
+
+        Ride ride =
+                new Ride(
+                        "Athens",
+                        "Piraeus",
+                        LocalDateTime.now()
+                                .plusDays(1),
+                        9,
+                        driver
+                );
+
+        IllegalArgumentException exception =
+                assertThrows(
+                        IllegalArgumentException.class,
+                        () -> rideService.createRide(ride)
+                );
+
+        assertEquals(
+                "Available seats must be between 1 and 8",
+                exception.getMessage()
+        );
+
+        verify(rideRepository, never()).save(any());
+    }
+
+    @Test
+    void createRideShouldTrimOriginAndDestinationBeforeSaving() {
+
+        when(driver.getId()).thenReturn(1L);
+
+        Ride ride =
+                new Ride(
+                        " Athens ",
+                        " Piraeus ",
+                        LocalDateTime.now()
+                                .plusDays(1),
+                        3,
+                        driver
+                );
+
+        when(rideRepository.save(ride)).thenReturn(ride);
+
+        Ride result = rideService.createRide(ride);
+
+        assertEquals("Athens", result.getOrigin());
+        assertEquals("Piraeus", result.getDestination());
+        verify(rideRepository).save(ride);
+    }
 }

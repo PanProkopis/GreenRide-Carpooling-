@@ -32,11 +32,27 @@ public class RideService {
             );
         }
 
+        ride.setOrigin(
+                ride.getOrigin().trim()
+        );
+
         if (ride.getDestination() == null
                 || ride.getDestination().isBlank()) {
 
             throw new IllegalArgumentException(
                     "Destination cannot be empty"
+            );
+        }
+
+        ride.setDestination(
+                ride.getDestination().trim()
+        );
+
+        if (ride.getOrigin()
+                .equalsIgnoreCase(ride.getDestination())) {
+
+            throw new IllegalArgumentException(
+                    "Origin and destination must be different"
             );
         }
 
@@ -49,10 +65,11 @@ public class RideService {
             );
         }
 
-        if (ride.getAvailableSeats() <= 0) {
+        if (ride.getAvailableSeats() < 1
+                || ride.getAvailableSeats() > 8) {
 
             throw new IllegalArgumentException(
-                    "Available seats must be greater than 0"
+                    "Available seats must be between 1 and 8"
             );
         }
 

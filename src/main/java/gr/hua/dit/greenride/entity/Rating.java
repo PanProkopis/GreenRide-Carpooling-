@@ -3,7 +3,13 @@ package gr.hua.dit.greenride.entity;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "ratings")
+@Table(
+        name = "ratings",
+        uniqueConstraints = @UniqueConstraint(
+                name = "uk_rating_from_to_ride",
+                columnNames = {"from_user_id", "to_user_id", "ride_id"}
+        )
+)
 public class Rating {
 
     @Id

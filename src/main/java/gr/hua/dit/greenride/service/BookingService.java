@@ -144,7 +144,7 @@ public class BookingService {
 
         Booking booking =
                 bookingRepository
-                        .findById(bookingId)
+                        .findByIdForUpdate(bookingId)
                         .orElseThrow(() ->
                                 new ResourceNotFoundException(
                                         "Booking not found"

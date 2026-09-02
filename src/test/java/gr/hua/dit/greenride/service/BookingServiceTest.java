@@ -180,7 +180,7 @@ class BookingServiceTest {
 
         when(
                 bookingRepository
-                        .findById(1L)
+                        .findByIdForUpdate(1L)
         ).thenReturn(
                 Optional.of(booking)
         );
@@ -204,5 +204,71 @@ class BookingServiceTest {
                 bookingRepository,
                 never()
         ).delete(any());
+    }
+
+    @Test
+    void cancelBookingShouldUseLockingRepositoryMethod() {
+
+        when(passenger.getId()).thenReturn(2L);
+        Ride ride = futureRideWithAvailableSeats(2);
+        Booking booking = bookingForPassengerAndRide(ride);
+        when(bookingRepository.findByIdForUpdate(1L))
+                .thenReturn(Optional.of(booking));
+
+        bookingService.cancelBooking(1L, passenger);
+
+        verify(bookingRepository).findByIdForUpdate(1L);
+        verify(bookingRepository, never()).findById(1L);
+    }
+
+    @Test
+    void cancelBookingShouldReturnExactlyOneAvailableSeat() {
+
+        when(passenger.getId()).thenReturn(2L);
+        Ride ride = futureRideWithAvailableSeats(2);
+        Booking booking = bookingForPassengerAndRide(ride);
+        when(bookingRepository.findByIdForUpdate(1L))
+                .thenReturn(Optional.of(booking));
+
+        bookingService.cancelBooking(1L, passenger);
+
+        assertEquals(3, ride.getAvailableSeats());
+        verify(rideRepository).save(ride);
+    }
+
+    @Test
+    void cancelBookingShouldDeleteCancelledBooking() {
+
+        when(passenger.getId()).thenReturn(2L);
+        Ride ride = futureRideWithAvailableSeats(2);
+        Booking booking = bookingForPassengerAndRide(ride);
+        when(bookingRepository.findByIdForUpdate(1L))
+                .thenReturn(Optional.of(booking));
+
+        bookingService.cancelBooking(1L, passenger);
+
+        verify(bookingRepository).delete(booking);
+    }
+
+    private Ride futureRideWithAvailableSeats(
+            int availableSeats) {
+
+        return new Ride(
+                "Athens",
+                "Piraeus",
+                LocalDateTime.now().plusHours(2),
+                availableSeats,
+                driver
+        );
+    }
+
+    private Booking bookingForPassengerAndRide(
+            Ride ride) {
+
+        return new Booking(
+                LocalDateTime.now().minusHours(1),
+                passenger,
+                ride
+        );
     }
 }

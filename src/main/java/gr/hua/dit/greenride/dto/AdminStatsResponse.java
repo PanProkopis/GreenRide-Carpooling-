@@ -33,6 +33,6 @@ public class AdminStatsResponse {
     }
 
     public double getAverageOccupancyPercentage() {
-        return averageOccupancyPercentage;
+        return averageOccupancyPercentage; 
     }
 }
